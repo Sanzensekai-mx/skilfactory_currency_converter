@@ -1,8 +1,12 @@
 import os
 
+import requests
+import telebot
 from dotenv import load_dotenv
 
-load_dotenv(encoding='utf-8')
+from handlers import bot
 
-TOKEN = str(os.getenv("TOKEN"))
 
+if __name__ == '__main__':
+    bot.polling()
+    # bot.infinity_polling()
