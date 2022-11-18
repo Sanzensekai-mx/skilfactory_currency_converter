@@ -1,21 +1,12 @@
-import os
-import json
-
-import requests
 import telebot
-from dotenv import load_dotenv
 
-from extensions import CurrencyAPI
+from extensions import *
 
 load_dotenv(encoding='utf-8')
 
 TOKEN = str(os.getenv("TOKEN"))
 
 bot = telebot.TeleBot(TOKEN)
-
-valute_name = {}
-with open('currencies_list.json', 'r', encoding='utf-8') as json_file:
-    valute_name = json.load(json_file)
 
 
 @bot.message_handler(commands=['start', 'help'])
@@ -58,7 +49,19 @@ def show_values(message: telebot.types.Message):
 
 @bot.message_handler(content_types=['text', ])
 def covert(message: telebot.types.Message):
-    quote, base, amount = message.text.strip().split()
-    price = CurrencyAPI.get_price(base=base, quote=quote, amount=amount)
-    text = f'Цена {amount} {valute_name[quote]} ({quote}) - {price} {valute_name[base]} ({base})'
-    bot.send_message(message.chat.id, text)
+    valute_names = CurrencyAPI.valute_dict()
+    try:
+        user_val = message.text.strip().split()
+
+        if len(user_val) != 3:
+            raise ConvertionException('Слишком много параметров в запросе.')
+
+        quote, base, amount = user_val
+        price = CurrencyAPI.get_price(base=base, quote=quote, amount=amount)
+    except ConvertionException as e:
+        bot.reply_to(message, f'Ошибка пользователя. \n{e}')
+    except Exception as e:
+        bot.reply_to(message, f'Не удалось обработать команду\n{e}')
+    else:
+        text = f'Цена {amount} {valute_names[quote]} ({quote}) - {price} {valute_names[base]} ({base})'
+        bot.send_message(message.chat.id, text)
