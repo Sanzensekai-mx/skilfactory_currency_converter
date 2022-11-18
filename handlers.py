@@ -56,12 +56,12 @@ def covert(message: telebot.types.Message):
         if len(user_val) != 3:
             raise ConvertionException('Слишком много параметров в запросе.')
 
-        quote, base, amount = user_val
+        base, quote, amount = user_val
         price = CurrencyAPI.get_price(base=base, quote=quote, amount=amount)
     except ConvertionException as e:
         bot.reply_to(message, f'Ошибка пользователя. \n{e}')
     except Exception as e:
         bot.reply_to(message, f'Не удалось обработать команду\n{e}')
     else:
-        text = f'Цена {amount} {valute_names[quote]} ({quote}) - {price} {valute_names[base]} ({base})'
+        text = f'Цена {amount} {valute_names[base]} ({base}) - {price} {valute_names[quote]} ({quote})'
         bot.send_message(message.chat.id, text)

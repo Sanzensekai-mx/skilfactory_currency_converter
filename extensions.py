@@ -34,7 +34,7 @@ class CurrencyAPI:
         headers = {
             "apikey": str(os.getenv("API_KEY"))
         }
-        params = {'to': base, 'from': quote, 'amount': amount}
+        params = {'to': quote, 'from': base, 'amount': amount}
         cur_request = requests.request('GET', url=api_url, headers=headers, params=params)
         price = json.loads(cur_request.text)['result']
         return price
